@@ -1,0 +1,35 @@
+#!/usr/bin/env python2
+# -*- encoding: utf8 -*-
+
+import sys
+import pygame
+import logging
+import socketgame
+from socketgame import engine, utils
+from socketgame.menu import Menu, ResolutionButton, FullscreenButton, ExitButton
+from socketgame.scene import NewGameButton
+
+if __name__ == '__main__':
+    logging.basicConfig(level = logging.DEBUG)
+    if len(sys.argv) < 3:
+        print 'usage: %s host port [--debug]' % (sys.argv[0])
+        sys.exit(1)
+
+    pygame.init()
+    pygame.mixer.init()
+    pygame.display.set_caption(socketgame.name + ' v' + socketgame.version)
+    _engine = engine.Engine((sys.argv[1], sys.argv[2]), len(sys.argv) > 3 and sys.argv[3] == '--debug') # --debug aby włączyć tryb testowy(pokazuje które części ekranu się odświeżają)
+    _engine.addModule(Menu(_engine, (
+        NewGameButton(_engine), # Nowa gra
+        ResolutionButton(_engine), # Rozdzielczosc
+        FullscreenButton(_engine), # Pelny ekran/okno
+        ExitButton(_engine), # Wyjscie
+    )))
+    _engine.activateModule('Menu')
+    try:
+        _engine.run()
+
+    except KeyboardInterrupt:
+        pass
+
+    print 'cya!'

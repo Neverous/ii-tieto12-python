@@ -1,0 +1,27 @@
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+import sys
+import logging
+from socketserver.SocketServer import BomberFactory
+from socketserver.ControlServer import ControlFactory
+
+MAX_LISTEN_QUEUE = 128
+
+if __name__ == '__main__':
+    logging.basicConfig(level = logging.DEBUG)
+    if len(sys.argv) < 6:
+        print 'usage: %s host port players mapWidth mapHeight' % (sys.argv[0])
+        sys.exit(1)
+
+    factory = BomberFactory(int(sys.argv[3]), (int(sys.argv[4]), int(sys.argv[5])))
+    control = ControlFactory(factory)
+    try:
+        from twisted.internet import reactor
+        reactor.listenTCP(int(sys.argv[2]), factory, MAX_LISTEN_QUEUE, sys.argv[1])
+        reactor.listenUNIX('/tmp/socketserver', control)
+        reactor.run()
+
+    except KeyboardInterrupt:
+        pass
+
+    print 'cya!'

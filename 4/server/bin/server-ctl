@@ -1,0 +1,27 @@
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+import sys
+import logging
+from twisted.internet.defer import Deferred
+from socketserver.ControlClient import ControlFactory
+
+def printData(x):
+    print x
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print 'usage: %s socket' % (sys.argv[0])
+        sys.exit(1)
+
+    d = Deferred()
+    d.addCallback(printData)
+    factory = ControlFactory(d)
+    try:
+        from twisted.internet import reactor
+        reactor.connectUNIX(sys.argv[1], factory)
+        reactor.run()
+
+    except KeyboardInterrupt:
+        pass
+
+    print 'cya!'
